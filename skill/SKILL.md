@@ -26,77 +26,142 @@ These are NON-NEGOTIABLE. Backed by ETH Zurich, Anthropic, Google DeepMind, Manu
 
 ## Phase 0: Engineer Interview
 
-MANDATORY. Before touching ANY code, have a conversation. Ask ONE GROUP AT A TIME.
+MANDATORY. Before touching ANY code, have a diagnostic conversation. Ask ONE GROUP AT A TIME. This is UltraContext's key differentiator — no other tool interviews the human.
 
-### Group 1: Your Tools
+**Tone:** Like a senior engineer onboarding onto the team. Warm, curious, efficient. Not a form — a conversation.
+
+### Group 1: Your Tools & Environment
 
 > **Which AI coding tools do you use?** (select all that apply)
 > Claude Code / Cursor / GitHub Copilot / Windsurf / Aider / Gemini CLI / Other
 >
-> **Which is your PRIMARY tool?**
+> **Which is your PRIMARY tool?** (this gets the deepest configuration)
+>
+> **What model do you typically use?** (Opus, Sonnet, GPT-4, etc.)
 
-Only generate configs for tools they use. Primary tool gets the deepest configuration.
+Only generate configs for tools they use. Primary tool gets the richest config; others get the AGENTS.md baseline. Model choice affects how aggressive we can be with instruction density.
 
-### Group 2: Your Team
+### Group 2: Your Team & Collaboration
 
 > **How many people work on this codebase?** Just me / 2-5 / 6-20 / 20+
 >
-> **Do others use AI agents?** Same tools / Mixed tools / Just me
+> **Do others use AI agents?** Same tools / Mixed tools / Just me / Not sure
+>
+> **How do you handle code review?** PRs with human review / PRs with AI review / Direct to main / Mix
 
-Solo devs get CLAUDE.local.md freedom. Teams need AGENTS.md in git. Mixed tools need the universal standard.
+Solo → CLAUDE.local.md freedom. Team → AGENTS.md in git. Mixed tools → universal standard. PR-heavy teams → compounding engineering setup.
 
-### Group 3: Your Pain Points
+### Group 3: Your Pain Points (Diagnostic)
 
-> **What frustrates you most with AI agents on your code?** (top 2-3)
-> - Doesn't follow coding patterns
-> - Breaks things (doesn't understand architecture)
-> - Runs wrong commands
-> - Modifies files it shouldn't
-> - Commits/pushes without asking
-> - Doesn't match our style
-> - Doesn't understand domain logic
+> **What frustrates you most with AI agents on your code?** (pick your top 2-3)
+> - Doesn't follow our coding patterns/conventions
+> - Breaks things because it doesn't understand architecture
+> - Runs wrong commands (build, test, lint)
+> - Modifies files it shouldn't touch
+> - Commits or pushes without being asked
+> - Writes code that doesn't match our style
+> - Doesn't understand our domain/business logic
 > - Wastes time exploring irrelevant files
-> - Forgets context mid-session
+> - Forgets my rules mid-session (after compaction)
+> - Takes too long on simple tasks (over-exploring)
 > - Something else: ___
 
-This directly determines config content priority.
+**FOLLOW UP on each selection.** Don't just record — diagnose:
+- "You said it runs wrong commands — what command does it run, and what should it run instead?"
+- "You said it breaks architecture — can you give me a specific example of what it broke?"
+- "You said it forgets rules — at what point in the session does it start forgetting?"
 
-### Group 4: Your Landmines
+Each follow-up answer becomes a specific line in the config. Vague pain points produce vague configs.
 
-> **Top 3-5 things that would waste hours if an AI agent hit them unaware?**
+### Group 4: Your Landmines (The Highest-Value Question)
+
+> **What are the top 3-5 things that would waste hours if an AI agent hit them unaware?**
 >
-> Think: non-obvious build requirements, deprecated paths that look active, fragile tests, environment gotchas, deceptively complex areas.
+> Think about:
+> - Non-obvious build requirements or environment setup
+> - Deprecated code paths that look active
+> - Fragile tests or flaky CI
+> - Files that look simple but are deceptively complex
+> - Things that break in non-obvious ways
+> - Areas where "the obvious fix" is actually wrong
 
-HIGHEST VALUE content. Only humans know these.
+**DIG DEEPER on each landmine.** For each one ask:
+- "What happens when someone hits this? What does the failure look like?"
+- "Is there a specific file path or directory?"
+- "What's the correct way to handle this area?"
 
-### Group 5: Your Workflow
+Landmines are the SINGLE MOST VALUABLE content in any config file. Spend time here. The more specific, the better.
+
+### Group 5: Your Workflow & Autonomy
 
 > **Agent autonomy level?**
-> - High: run tests, commit, push, create PRs
-> - Medium: run tests/lint freely, ask before committing
-> - Low: ask before any state-changing command
+> - High: run tests, commit, push, create PRs — tell me when done
+> - Medium: run tests/lint freely, but ask before committing or pushing
+> - Low: ask before running any command that modifies state
 >
 > **Want deterministic hooks?** (auto-lint, auto-format on file changes)
-> Yes auto-fix / Yes check-only / No
+> - Yes, auto-fix everything (format + lint on save)
+> - Yes, but only check — don't auto-fix
+> - No, I prefer to control when formatting runs
 >
-> **Recurring workflows?** (e.g., "fix issue from ticket", "add API endpoint", "database migration")
+> **Do you want continuous sync?** (warns when configs may be stale on every commit)
+> - Yes (recommended)
+> - No
+>
+> **Recurring workflows you do often?**
+> Examples: "fix issue from Linear/Jira", "add new API endpoint", "database migration", "deploy to staging", "write tests for existing code"
 
-Autonomy → boundaries. Workflows → skills. Hook preference → enforcement strategy.
+Autonomy → boundaries. Workflows → skills. Hook pref → enforcement. Sync → pre-commit hook.
 
-### Group 6: Existing Setup
+### Group 6: Your Current Setup
 
-> **Do you have CLAUDE.md / AGENTS.md / .cursorrules already?**
-> **What's working? What's not?**
-> **Any MCP servers currently?**
+> **Do you already have any of these?** CLAUDE.md / AGENTS.md / .cursorrules / copilot-instructions.md
+>
+> **If yes — what's working well about them?** (we keep what works)
+>
+> **What's NOT working?** (we fix what's broken)
+>
+> **Any MCP servers currently configured?**
+>
+> **Any pre-commit hooks or CI quality gates already running?**
 
-Improve what exists. Don't replace wholesale.
+Improve what exists. Don't replace wholesale. If something works, preserve it.
+
+### Group 7: Your Aspirations (Quick)
+
+> **On a scale of 1-5, how important is each to you?**
+> - Agent follows conventions perfectly: ___
+> - Agent works autonomously with minimal babysitting: ___
+> - Agent maintains quality across long sessions: ___
+> - Configs stay fresh as code evolves: ___
+> - New team members (human or AI) can onboard fast: ___
+
+This prioritizes which features we invest the most setup effort in.
 
 ### Confirm Before Proceeding
 
-Summarize back:
-> "Based on your answers, here's what I'll set up: [tool configs], [pain point priorities], [landmines to document], [autonomy level], [hooks], [skills]. Sound right?"
+Summarize the FULL diagnostic back:
 
-WAIT for confirmation.
+> "Here's what I learned and what I'll build:
+>
+> **Tools:** [primary] as main, [others] get AGENTS.md baseline
+> **Team:** [size], [collaboration model], [review process]
+> **Top pain points:**
+> 1. [Specific pain point with specific example they gave]
+> 2. [Specific pain point with specific example they gave]
+> **Landmines:**
+> 1. [Specific landmine with file path and failure mode]
+> 2. [Specific landmine with file path and failure mode]
+> 3. [Specific landmine with file path and failure mode]
+> **Autonomy:** [level] — [specific boundaries]
+> **Hooks:** [yes/no] — [what gets enforced]
+> **Continuous sync:** [yes/no]
+> **Skills to create:** [based on their workflows]
+> **Priorities:** [ordered by their aspiration scores]
+>
+> Does this capture everything? Anything to add or change?"
+
+**WAIT for confirmation before proceeding to Phase 1.**
 
 ---
 
@@ -705,6 +770,58 @@ Overall             38/60
 Top recommendation: Set up hooks for auto-format 
 and PostCompact re-injection to reach 48/60.
 ```
+
+---
+
+## Phase 11: Continuous Sync Setup (NEW)
+
+Configs go stale as code evolves. Set up continuous sync so configs stay fresh.
+
+### Pre-commit Staleness Detection
+
+Install the UltraContext sync hook that warns on every commit when:
+- Package manager files changed (commands may be stale)
+- CI configs changed (test/build commands may drift)
+- Lint/format configs changed (hooks may need update)
+- New directories with 3+ files lack scoped CLAUDE.md
+- Agent configs haven't been updated in 14+ days
+- Soft negative instructions detected in configs
+- HANDOFF.md has never been filled in
+
+**Installation:**
+```bash
+cp skill/templates/hooks/ultracontext-sync.sh .git/hooks/pre-commit
+chmod +x .git/hooks/pre-commit
+```
+
+Or add to existing `.pre-commit-config.yaml`:
+```yaml
+- repo: local
+  hooks:
+    - id: ultracontext-sync
+      name: UltraContext Sync Check
+      entry: .git/hooks/ultracontext-sync.sh
+      language: script
+      always_run: true
+      pass_filenames: false
+```
+
+The hook is NON-BLOCKING — it warns but doesn't prevent commits. Engineers stay in flow while being reminded to keep configs fresh.
+
+### Staleness Rules
+
+| Trigger | Warning |
+|---------|---------|
+| package.json/pyproject.toml changed | "Verify commands in AGENTS.md are still correct" |
+| CI workflow changed | "Verify commands match CI" |
+| Lint config changed | "Verify hooks in settings.local.json" |
+| New directory with 3+ files | "Consider adding scoped CLAUDE.md" |
+| Config >14 days old | "Consider reviewing" |
+| Soft negative found | "Rewrite as MUST instead of don't" |
+
+### Re-run /ultracontext
+
+Tell the engineer: "Run `/ultracontext` anytime to re-analyze and refresh configs. The interview is skipped on re-runs — only codebase analysis and scoring are re-executed."
 
 ---
 
