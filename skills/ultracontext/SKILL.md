@@ -167,69 +167,19 @@ Summarize the FULL diagnostic back:
 
 ## Phase 1: Deep Codebase Analysis
 
-With preferences in hand, analyze the repository:
+Analyze the repository using Glob, Grep, Read, and Bash. For each item, focus on what's NON-OBVIOUS — skip anything agents can discover by reading code.
 
-**1.1 — Tech Stack** (DO NOT just repeat package.json)
-```
-Check: package.json, Cargo.toml, pyproject.toml, go.mod, Gemfile, pom.xml
-Goal: NON-OBVIOUS choices — what would surprise a new developer?
-```
-
-**1.2 — Exact Commands**
-```
-Check: package.json scripts, Makefile, justfile, CI configs (.github/workflows/*)
-Goal: ACTUAL commands with FULL FLAGS — not "npm test" but the exact invocation
-```
-
-**1.3 — Architectural Landmines**
-```
-Check: Directory structure, import patterns, custom abstractions, middleware
-Goal: COUNTERINTUITIVE patterns — what differs from framework defaults?
-```
-
-**1.4 — Existing Configs**
-```
-Check: CLAUDE.md, AGENTS.md, .cursorrules, .cursor/rules/, copilot-instructions.md, GEMINI.md
-Goal: What exists, what's stale, what's working
-```
-
-**1.5 — Code Landmines** (combine with engineer's answers from Phase 0)
-```
-Check: Deprecated paths, legacy code, fragile tests, env requirements
-Goal: What wastes HOURS if hit unaware
-```
-
-**1.6 — Testing Patterns**
-```
-Check: Test files, config, CI commands, fixtures, mocks, async patterns
-Goal: Testing philosophy, exact commands, what MUST be followed
-```
-
-**1.7 — Style Enforcement (for hooks, NOT config)**
-```
-Check: .eslintrc, biome.json, .prettierrc, ruff.toml, pre-commit hooks
-Goal: What DETERMINISTIC TOOLS handle — these become hooks, not CLAUDE.md lines
-```
-
-**1.8 — Token Budget Estimation**
-```
-Estimate tokens consumed by:
-- Existing CLAUDE.md / AGENTS.md
-- Skill descriptions (always loaded)
-- Tool definitions (MCP servers)
-- System prompt overhead (~2,500 tokens for Claude Code)
-Report: "X tokens used before conversation starts. Y available for actual work."
-```
-
-**1.9 — Negative Instruction Scan**
-```
-Scan ALL existing config files for:
-- "don't use X" → rewrite as "MUST use Y instead"
-- "avoid X" → rewrite as "MUST use Y"  
-- "do not X" → rewrite as "MUST Y instead"
-- Keep "NEVER X" as-is (absolute prohibitions are fine)
-Flag and fix every soft negative found.
-```
+| Step | Check | Goal |
+|------|-------|------|
+| 1.1 Tech Stack | package.json, pyproject.toml, Cargo.toml, go.mod | Non-obvious choices that would surprise a new dev |
+| 1.2 Commands | scripts, Makefile, CI configs | Exact commands with FULL FLAGS |
+| 1.3 Architecture | Imports, custom abstractions, middleware | Counterintuitive patterns differing from defaults |
+| 1.4 Existing Configs | CLAUDE.md, AGENTS.md, .cursorrules, etc. | What exists, what's stale |
+| 1.5 Landmines | Deprecated paths, fragile tests, env gotchas | Combine with engineer's Phase 0 answers |
+| 1.6 Testing | Test files, config, CI commands, async patterns | Exact test commands, philosophy |
+| 1.7 Style Tools | .eslintrc, biome.json, ruff.toml, pre-commit | What's deterministic → becomes hooks, NOT config lines |
+| 1.8 Token Budget | Existing configs, skill descriptions, MCP tools | Estimate baseline token cost before conversation starts |
+| 1.9 Negative Scan | All config files | Find "don't/avoid/do not" → rewrite as "MUST Y" (keep NEVER as-is) |
 
 ---
 
@@ -306,92 +256,19 @@ Generate ONLY for tools the engineer uses (Phase 0 answers).
 
 ### 3.1 — AGENTS.md (Universal Standard)
 
-ALWAYS generate. 25+ tools read it. Structure:
-
-```markdown
-# [Project Name]
-
-[ONE sentence: what this is]
-
-## Commands
-
-```bash
-# Dev
-[exact command]
-
-# Test (single)
-[exact command with flags]
-
-# Test (suite)
-[exact command with flags]
-
-# Lint
-[exact command]
-
-# Type check
-[exact command]
-
-# Build
-[exact command]
-```
-
-## Stack
-
-[ONLY non-obvious choices with WHY]
-
-## Boundaries
-
-### Always
-- [Required actions]
-
-### Ask First
-- [Actions needing approval]
-
-### Never
-- NEVER commit secrets or .env files
-- [Project-specific prohibitions]
-
-## Landmines
-
-- `path/to/file`: [What's dangerous and WHY]
-
-## Patterns
-
-```[lang]
-// CORRECT: [pattern name]
-[actual code]
-
-// WRONG: [anti-pattern]
-[what not to do]
-```
-```
+ALWAYS generate. 25+ tools read it. Use `AGENTS.md.template` as the base structure. Sections in order: Commands, Stack, Boundaries (Always/Ask First/Never), Landmines, Patterns.
 
 **Rules:**
 - MUST be under 200 lines (under 100 is better)
-- MUST lead with commands
-- MUST use RFC 2119 (MUST, SHOULD, NEVER)
+- MUST lead with executable commands (full flags)
+- MUST use RFC 2119 language (MUST, SHOULD, NEVER)
 - MUST NOT include directory trees, standard patterns, or README content
-- MUST include three-tier boundaries
+- MUST include three-tier boundaries (Always / Ask First / Never)
 - Each line MUST pass: "Would removing this cause a mistake?"
 
 ### 3.2 — CLAUDE.md (Claude-Specific)
 
-Only if engineer uses Claude Code. SHORT — under 50 lines. Use @imports.
-
-```markdown
-See @AGENTS.md for project conventions.
-
-@docs/architecture.md
-@docs/testing-guide.md
-
-## Claude-Specific
-
-### Before committing
-MUST run `[exact lint]` and `[exact test]`
-
-### When modifying [area]
-Read @[specific doc] first
-```
+Only if engineer uses Claude Code. Use `CLAUDE.md.template` as base. MUST be under 50 lines. Use @imports to reference AGENTS.md and docs — don't duplicate content.
 
 ### 3.3 — Multi-Level Hierarchy (NEW)
 
@@ -454,210 +331,37 @@ repo/
 
 ## Phase 5: Set Up Hooks
 
-For the engineer's tools. Only if they opted in during Phase 0.
+Only if engineer opted in during Phase 0. Read `hooks/settings.json.template` for the pre-built hook library.
 
-### Pre-Built Hook Library
-
-**PostToolUse — Auto-format on file changes:**
-```json
-{
-  "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Write|Edit",
-        "command": "[project-specific format command] $FILE_PATH",
-        "description": "Auto-format after file changes"
-      }
-    ]
-  }
-}
-```
-
-**PreToolUse — Branch protection:**
-```json
-{
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Bash(git push.*main|git push.*master)",
-        "command": "echo 'BLOCKED: Never push directly to main. Create a PR instead.' && exit 1",
-        "description": "Block direct pushes to main/master"
-      }
-    ]
-  }
-}
-```
-
-**PostCompact — Context re-injection (CRITICAL):**
-```json
-{
-  "hooks": {
-    "PostCompact": [
-      {
-        "command": "cat <<'REINJECT'\n## Critical Context (re-injected after compaction)\n\n$(head -30 CLAUDE.md)\n\n## Active Landmines\n$(grep -A1 '##.*Landmine' AGENTS.md)\nREINJECT",
-        "description": "Re-inject critical context after compaction"
-      }
-    ]
-  }
-}
-```
-
-**PreCommit — Quality gate:**
-```json
-{
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Bash(git commit)",
-        "command": "[project-specific lint command] && [project-specific test command]",
-        "description": "Lint and test before committing"
-      }
-    ]
-  }
-}
-```
-
-Adapt all hooks to the project's actual commands discovered in Phase 1.
+Set up these hooks adapted to the project's actual commands from Phase 1:
+- **PostToolUse (Write|Edit)** — auto-format with project's formatter
+- **PreToolUse (git push main)** — block direct pushes to main/master
+- **PostCompact** — re-inject top 30 lines of CLAUDE.md + landmines after compaction (CRITICAL — solves "agent forgets rules")
+- **PreToolUse (git commit)** — run lint + test before committing
 
 ---
 
-## Phase 6: Set Up Session Management (NEW)
+## Phase 6: Set Up Session Management
 
-### HANDOFF.md Template
+Three deliverables:
 
-Generate at project root:
+1. **HANDOFF.md** — copy from `HANDOFF.md` template to project root. Engineers fill this before ending sessions; next session reads it to resume.
 
-```markdown
-# Session Handoff
+2. **.claudeignore** — generate from `claudeignore.template`, customized for the project. Analyze .gitignore and repo structure to add project-specific exclusions (build artifacts, binaries, lock files, vendor dirs).
 
-> Update this before ending a long session. Next session starts by reading this file.
-
-## Last Updated
-[date]
-
-## What I Was Working On
-[Current task/feature]
-
-## What's Done
-- [Completed items]
-
-## What's Left
-- [Remaining items]
-
-## Key Decisions Made
-- [Architectural or design decisions with WHY]
-
-## Landmines Discovered
-- [New gotchas found during this session — consider adding to AGENTS.md]
-
-## Files Modified
-- [List of changed files for quick orientation]
-
-## How to Continue
-[Exact next steps — what command to run, what file to open]
-```
-
-### .claudeignore Generation
-
-Analyze the repo and generate `.claudeignore` excluding:
-```
-# Build artifacts
-node_modules/
-dist/
-build/
-.next/
-__pycache__/
-*.pyc
-
-# Dependencies
-vendor/
-.venv/
-
-# Large generated files
-*.lock
-coverage/
-.nyc_output/
-
-# Binary/media
-*.png
-*.jpg
-*.gif
-*.ico
-*.woff
-*.woff2
-*.ttf
-
-# IDE
-.idea/
-.vscode/settings.json
-
-# Project-specific
-[detected from .gitignore and repo analysis]
-```
-
-### Document-and-Clear Workflow Guide
-
-Add to CLAUDE.md:
-
-```markdown
-## Session Management
-
-When context gets heavy (after ~40 messages or complex exploration):
-1. Update HANDOFF.md with current progress
-2. `/clear`
-3. Start fresh: "Read HANDOFF.md and continue where I left off"
-
-This outperforms auto-compaction. Use it.
-```
+3. **Document-and-Clear workflow** — add to CLAUDE.md:
+   - "When context gets heavy (~40 messages): update HANDOFF.md, `/clear`, start fresh reading HANDOFF.md"
+   - This outperforms auto-compaction (research-backed)
 
 ---
 
-## Phase 7: Set Up Compounding Engineering (NEW)
+## Phase 7: Set Up Compounding Engineering
 
-### Auto-Learning from PR Reviews
+Two deliverables:
 
-Generate a GitHub Action (`.github/workflows/learn-from-reviews.yml`):
+1. **GitHub Action** — copy `hooks/learn-from-reviews.yml` to `.github/workflows/`. When a reviewer tags `@claude-learn [rule]`, it auto-creates a PR adding that rule to AGENTS.md. The codebase learns from every review.
 
-```yaml
-name: Learn from PR Reviews
-on:
-  pull_request_review:
-    types: [submitted]
-
-jobs:
-  update-context:
-    if: contains(github.event.review.body, '@claude-learn')
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Extract learning
-        run: |
-          LEARNING="${{ github.event.review.body }}"
-          LEARNING=$(echo "$LEARNING" | sed 's/@claude-learn//')
-          echo "" >> AGENTS.md
-          echo "- $LEARNING" >> AGENTS.md
-      - name: Create PR with learning
-        uses: peter-evans/create-pull-request@v6
-        with:
-          commit-message: "context: add learning from PR review"
-          title: "Context: Add learning from PR #${{ github.event.pull_request.number }}"
-          branch: context-update-${{ github.event.pull_request.number }}
-```
-
-When a reviewer writes `@claude-learn agents MUST validate input before database writes`, it auto-creates a PR adding that rule to AGENTS.md.
-
-### Living Document Reminder
-
-Add to CLAUDE.md:
-
-```markdown
-## Compounding Engineering
-
-When you make a mistake that a rule could have prevented:
-1. Fix the mistake
-2. Add a one-line rule to AGENTS.md that prevents it
-3. The codebase gets smarter over time
-```
+2. **Living document reminder** — add to CLAUDE.md: "When you make a mistake a rule could have prevented: fix it, then add one line to AGENTS.md that prevents it."
 
 ---
 
@@ -711,117 +415,23 @@ The rule: soft negatives ("don't", "avoid", "do not") → positive MUST statemen
 
 ## Phase 10: Quality Audit & Report
 
-### Content Checklist
+Run these checks on all generated files:
 
-- [ ] Every line passes: "Would removing this cause an agent mistake?"
-- [ ] No directory trees (agents can `ls`)
-- [ ] No standard patterns agents know
-- [ ] No README duplication
-- [ ] Commands include full flags
-- [ ] Code examples show correct AND incorrect
-- [ ] Three-tier boundaries present
-- [ ] RFC 2119 language used
-- [ ] No soft negative instructions remain
+**Content:** Every line passes "would removing this cause a mistake?" | No directory trees | No README duplication | Commands have full flags | Three-tier boundaries present | RFC 2119 language | No soft negatives remain
 
-### Length Limits
+**Length:** AGENTS.md <200 lines | CLAUDE.md <50 lines | Subdirectory files <50 lines | .mdc rules <80 lines | Skills <150 lines
 
-- [ ] AGENTS.md: under 200 lines (under 100 ideal)
-- [ ] CLAUDE.md: under 50 lines (uses @imports)
-- [ ] Subdirectory files: under 50 lines each
-- [ ] Each .mdc rule: under 80 lines
-- [ ] Each skill: under 150 lines
+**Token Budget Report:** Estimate tokens for system prompt (~2,500) + CLAUDE.md + AGENTS.md + skill descriptions + MCP tools. Report total baseline cost vs 128K window. HEALTHY = <40% used, WARNING = 40-60%, CRITICAL = >60%.
 
-### Token Budget Report (NEW)
-
-```
-Context Budget Report
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-System prompt (Claude Code)    ~2,500 tokens
-CLAUDE.md                      ~[X] tokens
-AGENTS.md                      ~[X] tokens  
-Skill descriptions             ~[X] tokens
-MCP tool definitions           ~[X] tokens
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Total baseline cost            ~[X] tokens
-Context window                 128,000 tokens
-Available for work             ~[X] tokens ([X]%)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Status: [HEALTHY / WARNING / CRITICAL]
-
-HEALTHY = <40% used by context
-WARNING = 40-60% used by context  
-CRITICAL = >60% used by context (reduce configs!)
-```
-
-### Hierarchy of Leverage Report (NEW)
-
-```
-Hierarchy of Leverage Score
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Verification        [██████████] 10/10
-CLAUDE.md quality   [████████░░]  8/10
-Hooks               [██████░░░░]  6/10
-Skills              [████░░░░░░]  4/10
-Subagent patterns   [██░░░░░░░░]  2/10
-Session management  [████████░░]  8/10
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Overall             38/60
-
-Top recommendation: Set up hooks for auto-format 
-and PostCompact re-injection to reach 48/60.
-```
+**Hierarchy of Leverage Report:** Score each layer 0-10 (verification, CLAUDE.md, hooks, skills, subagents, session management). Show total out of 60. Recommend highest-impact improvement.
 
 ---
 
-## Phase 11: Continuous Sync Setup (NEW)
+## Phase 11: Continuous Sync
 
-Configs go stale as code evolves. Set up continuous sync so configs stay fresh.
+If engineer opted in during Phase 0, install `hooks/ultracontext-sync.sh` as a pre-commit hook. It warns (non-blocking) when package files, CI configs, or lint configs change that may make agent configs stale. Also flags configs older than 14 days and detects soft negative instructions.
 
-### Pre-commit Staleness Detection
-
-Install the UltraContext sync hook that warns on every commit when:
-- Package manager files changed (commands may be stale)
-- CI configs changed (test/build commands may drift)
-- Lint/format configs changed (hooks may need update)
-- New directories with 3+ files lack scoped CLAUDE.md
-- Agent configs haven't been updated in 14+ days
-- Soft negative instructions detected in configs
-- HANDOFF.md has never been filled in
-
-**Installation:**
-```bash
-cp skill/templates/hooks/ultracontext-sync.sh .git/hooks/pre-commit
-chmod +x .git/hooks/pre-commit
-```
-
-Or add to existing `.pre-commit-config.yaml`:
-```yaml
-- repo: local
-  hooks:
-    - id: ultracontext-sync
-      name: UltraContext Sync Check
-      entry: .git/hooks/ultracontext-sync.sh
-      language: script
-      always_run: true
-      pass_filenames: false
-```
-
-The hook is NON-BLOCKING — it warns but doesn't prevent commits. Engineers stay in flow while being reminded to keep configs fresh.
-
-### Staleness Rules
-
-| Trigger | Warning |
-|---------|---------|
-| package.json/pyproject.toml changed | "Verify commands in AGENTS.md are still correct" |
-| CI workflow changed | "Verify commands match CI" |
-| Lint config changed | "Verify hooks in settings.local.json" |
-| New directory with 3+ files | "Consider adding scoped CLAUDE.md" |
-| Config >14 days old | "Consider reviewing" |
-| Soft negative found | "Rewrite as MUST instead of don't" |
-
-### Re-run /ultracontext
-
-Tell the engineer: "Run `/ultracontext` anytime to re-analyze and refresh configs. The interview is skipped on re-runs — only codebase analysis and scoring are re-executed."
+Tell the engineer: "Run `/ultracontext` anytime to re-analyze and refresh. The interview is skipped on re-runs."
 
 ---
 
@@ -853,18 +463,4 @@ ALWAYS end with:
 
 ## Research Basis
 
-Built on 200+ sources including:
-- **Anthropic** — Effective Context Engineering (engineering blog)
-- **ETH Zurich** — 2 studies on AGENTS.md impact
-- **Google DeepMind** — Sessions & Memory (70-page whitepaper)
-- **Manus** — Production lessons (50+ tool-calls/task, 4 framework rebuilds)
-- **GitHub** — 2,500 repository AGENTS.md analysis
-- **LangChain** — Write/Select/Compress/Isolate framework
-- **JetBrains** — NeurIPS 2025: observation masking
-- **METR** — Controlled study on AI developer productivity
-- **Boris Cherny** — Claude Code creator's workflow (259 PRs/30 days)
-- **Dex Horthy** — 12-Factor Agents, harness engineering
-- **40+ production CLAUDE.md files** from open source projects
-- **Community** — Reddit, HackerNews, GitHub Discussions practitioner wisdom
-
-Full research: github.com/[repo]/research/logs/ (12 documents, 471KB)
+Built on 200+ sources: Anthropic, ETH Zurich, Google DeepMind, Manus, GitHub (2,500-repo analysis), LangChain, JetBrains (NeurIPS 2025), METR, Boris Cherny, Dex Horthy, 40+ production CLAUDE.md files, Reddit/HN/GitHub Discussions. Full research: github.com/johnnichev/UltraContext/research/logs/
