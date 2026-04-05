@@ -1,0 +1,16 @@
+# Research logs — 484KB, 12 docs, rarely needed during development
+# Read research/SYNTHESIS.md for the distilled version instead
+research/logs/
+
+# Private working files
+.private/
+
+# OS artifacts
+.DS_Store
+
+# Git internals
+.git/
+
+# No build artifacts in this repo, but exclude if they appear
+node_modules/
+dist/

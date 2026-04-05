@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash(git push.*main|git push.*master)",
+        "command": "echo 'BLOCKED: Never push directly to main/master. Create a feature branch and PR.' && exit 1",
+        "description": "Block direct pushes to main/master"
+      }
+    ],
+    "PostCompact": [
+      {
+        "command": "head -30 CLAUDE.md && echo '---' && grep -A20 '## Landmines' AGENTS.md",
+        "description": "Re-inject CLAUDE.md orientation + AGENTS.md landmines after compaction"
+      }
+    ]
+  }
+}
