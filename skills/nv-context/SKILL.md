@@ -113,15 +113,16 @@ Analyze the repository using Glob, Grep, Read, and Bash. For each item, focus on
 
 | Step | Check | Goal |
 |------|-------|------|
-| 1.1 Tech Stack | package.json, pyproject.toml, Cargo.toml, go.mod | Non-obvious choices that would surprise a new dev |
-| 1.2 Commands | scripts, Makefile, CI configs | Exact commands with FULL FLAGS |
-| 1.3 Architecture | Imports, custom abstractions, middleware | Counterintuitive patterns differing from defaults |
-| 1.4 Existing Configs | CLAUDE.md, AGENTS.md, .cursorrules, etc. | What exists, what's stale |
-| 1.5 Landmines | Deprecated paths, fragile tests, env gotchas | Combine with engineer's Phase 0 answers |
-| 1.6 Testing | Test files, config, CI commands, async patterns | Exact test commands, philosophy |
-| 1.7 Style Tools | .eslintrc, biome.json, ruff.toml, pre-commit | What's deterministic -> becomes hooks, NOT config lines |
-| 1.8 Token Budget | Existing configs, skill descriptions, MCP tools | Estimate baseline token cost before conversation starts |
-| 1.9 Negative Scan | All config files | Find "don't/avoid/do not" -> rewrite as "MUST Y" (keep NEVER as-is) |
+| 1.1 Token Bombs | ANY file >200 lines referenced in CLAUDE.md or loaded at session start | **HIGHEST PRIORITY.** Split into slim current-state + archive. Production data: 440→67 lines (-85%), 805→59 lines (-93%, saved 15.8K tokens/session). This single step often has more impact than everything else combined. |
+| 1.2 Tech Stack | package.json, pyproject.toml, Cargo.toml, go.mod | Non-obvious choices that would surprise a new dev |
+| 1.3 Commands | scripts, Makefile, CI configs | Exact commands with FULL FLAGS |
+| 1.4 Architecture | Imports, custom abstractions, middleware | Counterintuitive patterns differing from defaults |
+| 1.5 Existing Configs | CLAUDE.md, AGENTS.md, .cursorrules, etc. | What exists, what's stale |
+| 1.6 Landmines | Deprecated paths, fragile tests, env gotchas | Combine with engineer's Phase 0 answers |
+| 1.7 Testing | Test files, config, CI commands, async patterns | Exact test commands, philosophy |
+| 1.8 Style Tools | .eslintrc, biome.json, ruff.toml, pre-commit | What's deterministic → becomes hooks, NOT config lines |
+| 1.9 Token Budget | Existing configs, skill descriptions, MCP tools | Estimate baseline token cost before conversation starts |
+| 1.10 Negative Scan | All config files | Find "don't/avoid/do not" → rewrite as "MUST Y" (keep NEVER as-is) |
 
 ---
 
@@ -252,9 +253,11 @@ src/api/CLAUDE.md          -> ONLY if src/api/ directory exists
 docs/CLAUDE.md             -> ONLY if docs/ directory exists
 ```
 
-**Before generating any subdirectory CLAUDE.md, verify the directory exists with Glob or Bash. Skip directories that don't exist — generating configs for nonexistent directories is a waste of tokens and confuses future agents.**
+**Before generating any subdirectory CLAUDE.md, verify the directory exists with Glob or Bash. Skip directories that don't exist.**
 
 Each subdirectory file: 20-50 lines MAX. Only what's relevant to that directory.
+
+**Monorepo heuristic:** Create one subdirectory file per major concern that has DISTINCT rules. If the rules would be the same as the parent, don't split — the parent covers it. Production data: selectools used 3 subdirs (tests/, src/, docs/), saas-platform used 6 (web/, api/, tests/, agents/, products/, supabase/). Stop splitting when additional files would just repeat the parent's content.
 
 ### 3.4 — Tool-Specific Configs
 
@@ -310,8 +313,9 @@ Set up these hooks adapted to the project's actual commands from Phase 1:
 
 - **PostToolUse (Write|Edit)** — auto-format with project's formatter
 - **PreToolUse (git push main)** — block direct pushes to main/master
-- **PostCompact** — re-inject top 30 lines of CLAUDE.md + landmines after compaction (CRITICAL — solves "agent forgets rules")
+- **PostCompact** — re-inject top 30 lines of CLAUDE.md + landmines after compaction (CRITICAL — solves "agent forgets rules"). NOTE: after fixing bugs, review PostCompact content and remove fixed landmines — stale landmines waste tokens and confuse agents.
 - **PreToolUse (git commit)** — run lint + test before committing
+- **SessionStart** — check if CLAUDE.md/AGENTS.md are older than 14 days. Show warning: "Agent configs may be stale — review or run /nv-context to refresh." This is the cheapest way to prevent config drift. Production-proven in selectools.
 
 **Example hooks output to present to user:**
 ```json
@@ -346,15 +350,17 @@ Output the hooks configuration and instruct the user to apply it manually or use
 
 ## Phase 6: Set Up Session Management
 
-Three deliverables:
+Four deliverables:
 
-1. **HANDOFF.md** — generate in the project root with these sections: Current Task, Key Decisions, Open Questions, Files Modified, Next Steps. Engineers fill this before ending sessions; next session reads it to resume.
+1. **HANDOFF.md** — generate in the project root with sections: Current Task, Key Decisions, Open Questions, Files Modified, Next Steps. Recommend creating a `/handoff` skill that auto-populates from git state (branch, recent commits, test status) — proven effective in selectools.
 
-2. **.claudeignore** — generate by analyzing .gitignore and repo structure. Include project-specific exclusions: build artifacts, binaries, lock files, vendor dirs, node_modules, .git, dist/, coverage/, etc.
+2. **.claudeignore** — generate by analyzing .gitignore and repo structure. Include project-specific exclusions: build artifacts, binaries, lock files, vendor dirs, node_modules, .git, dist/, coverage/. For large repos, exclude landing pages, notebooks, and asset directories that aren't relevant to the primary development work.
 
 3. **Document-and-Clear workflow** — add to CLAUDE.md:
    - "When context gets heavy (~40 messages): update HANDOFF.md, `/clear`, start fresh reading HANDOFF.md"
    - This outperforms auto-compaction (research-backed)
+
+4. **Pitfalls placement decision** — if the project has many landmines/pitfalls (10+), present the tradeoff: keep them in root CLAUDE.md (100% activation, costs lines) vs move to @import PITFALLS.md (saves lines, ~79% activation). Let the engineer decide. Production data: selectools kept 26 pitfalls in root because they're the highest-value content.
 
 ---
 
@@ -460,15 +466,17 @@ Present results in this order:
 8. **Compounding Engineering** — GitHub Action or manual process
 9. **MCP Recommendations** — with token costs
 10. **Negative Instructions Fixed** — before/after rewrites
-11. **What You Should Hand-Refine** — where domain knowledge is needed
+11. **Bugs Found** — if the analysis surfaced real defects (common — saas-platform found 81 bugs during context engineering), report them
+12. **What You Should Hand-Refine** — where domain knowledge is needed
 
-For each file, connect to interview answers:
-> "Included exact `pytest -x -q` command because you said agents run wrong test commands."
-> "The 'Never' boundary includes `migrations/` because you flagged it as a landmine."
+For each file, connect to the analysis:
+> "Included exact `pytest -x -q` command because CI uses it."
+> "The 'Never' boundary includes `migrations/` because it's a landmine."
+> "Split SESSION.md because it was a 17K token bomb — 80% historical build log."
 
 ALWAYS end with:
 
-> "These files are a STARTING POINT. The most effective configs are refined over time. When an agent makes a mistake, add one line that prevents it. When a line stops being useful, delete it. Review every few weeks. Your codebase gets smarter with every iteration."
+> "These files are a STARTING POINT. The first pass is never the final pass — after fixing bugs or changing the codebase, review your configs and prune what's stale. Stale landmines in PostCompact hooks waste tokens. Configs are living documents."
 
 ---
 
