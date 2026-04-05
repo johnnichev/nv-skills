@@ -1,7 +1,7 @@
 {
-  "name": "nv-skills",
-  "version": "2.3.0",
-  "description": "nv: skills — context engineering, professional web design, and developer tools for engineers who ship with AI agents.",
+  "name": "nv-context",
+  "version": "3.0.0",
+  "description": "nv:context — Context engineering for engineers who ship. Auto-detects, analyzes, generates configs, hooks, session management, and token budgets. 200+ research sources.",
   "type": "module",
   "keywords": [
     "context-engineering",
@@ -19,7 +19,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/johnnichev/nv-skills"
+    "url": "https://github.com/johnnichev/nv-context"
   },
-  "homepage": "https://github.com/johnnichev/nv-skills"
+  "homepage": "https://github.com/johnnichev/nv-context"
 }

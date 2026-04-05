@@ -1,25 +1,12 @@
-# nv: skills
+# nv:context
 
-**Skills for engineers who ship.**
-
-A collection of AI agent skills by [johnnichev](https://github.com/johnnichev). One install, all tools.
+**Context engineering for engineers who ship.**
 
 ```bash
-npx skills add johnnichev/nv-skills -g -y
+npx skills add johnnichev/nv-context -g -y
 ```
 
-## Skills
-
-| Skill | Command | What it does |
-|-------|---------|-------------|
-| **nv:context** | `/nv-context` | Context engineering setup — interviews you, analyzes codebase, generates AGENTS.md/CLAUDE.md, hooks, session management, token budgets. 200+ research sources. |
-| **nv:design** | `/nv-design` | Professional web design — extract design systems from reference sites, recombine them, build landing pages, modernize old sites, generate image prompts. Vibe Design methodology. |
-
----
-
-## nv:context
-
-`/nv-context` analyzes your repository, interviews you about your workflow, and generates the complete context engineering infrastructure — so every AI coding agent works at maximum effectiveness.
+Auto-detects your tools, commands, and linters. Finds landmines with parallel agents. Generates configs, hooks, session management, and token budgets — so every AI coding agent works at maximum effectiveness.
 
 > "Most agent failures are not model failures — they are context failures."
 > — Philipp Schmid, Google DeepMind
@@ -73,18 +60,18 @@ your-repo/
 
 **Option 1: Skills CLI (recommended)**
 ```bash
-npx skills add johnnichev/nv-skills -g -y
+npx skills add johnnichev/nv-context -g -y
 ```
 
 **Option 2: One-liner**
 ```bash
 mkdir -p ~/.claude/skills/nv-context && curl -o ~/.claude/skills/nv-context/SKILL.md \
-  https://raw.githubusercontent.com/johnnichev/nv-skills/main/skills/nv-context/SKILL.md
+  https://raw.githubusercontent.com/johnnichev/nv-context/main/skills/nv-context/SKILL.md
 ```
 
 **Option 3: Clone with templates**
 ```bash
-git clone https://github.com/johnnichev/nv-skills.git
+git clone https://github.com/johnnichev/nv-context.git
 mkdir -p ~/.claude/skills/nv-context
 cp -r nv:context/skills/nv-context/* ~/.claude/skills/nv-context/
 ```

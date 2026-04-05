@@ -1,16 +1,13 @@
-# nv: skills
+# nv:context
 
-A collection of skills for engineers who ship with AI agents. By johnnichev.
+Context engineering for engineers who ship.
 
-## Available Skills
+## Skill
 
-- `/nv-context` — Set up state-of-the-art context engineering for any repository. Interviews you, analyzes your codebase, generates configs, hooks, session management, and token budgets.
-- `/nv-design` — Vibe Design methodology for professional web design. Extract design systems from reference sites, recombine them, build landing pages section-by-section, modernize old sites, and generate image prompts.
+- `/nv-context` — Auto-detects tools, commands, linters, MCP servers. Finds landmines with parallel agents. Generates AGENTS.md, CLAUDE.md, hooks, session management, and token budgets.
 
 ## Install
 
 ```bash
-npx skills add johnnichev/nv-skills -g -y
+npx skills add johnnichev/nv-context -g -y
 ```
-
-Installs ALL nv: skills across Claude Code, Cursor, Copilot, Gemini CLI, Codex, and 9+ tools.

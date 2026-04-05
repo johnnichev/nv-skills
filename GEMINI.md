@@ -1,11 +1,10 @@
-# nv: skills — Gemini CLI Support
+# nv:context — Gemini CLI Support
 
-## Available Skills
+## Skill
 
 - `nv-context` — Context engineering setup for any repository.
-- `nv-design` — Professional web design using Vibe Design methodology.
 
-## Tool Mapping (Gemini CLI)
+## Tool Mapping
 
 - `Read` → `read_file`
 - `Write` → `write_file`
