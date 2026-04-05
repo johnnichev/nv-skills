@@ -80,6 +80,29 @@ That's it. ONE interaction. The user types "go" or adds context. Then proceed to
 | CI config exists | Extract exact commands | "What's your test command?" |
 | MCP config exists | Preserve + recommend additions | "Use MCP?" |
 
+### Fallback: Ask ONLY What You Can't Detect
+
+If auto-detection finds NO tool-specific directories (.claude/, .cursor/, .github/copilot-instructions.md, etc.) AND no CLAUDE.md/AGENTS.md, then ask ONE multiple-choice question using AskUserQuestion:
+
+> **I couldn't detect which AI tools you use. Which do you work with?**
+> - Claude Code
+> - Cursor
+> - GitHub Copilot
+> - Windsurf
+> - Aider
+> - Gemini CLI
+> - Multiple (I'll generate for all major tools)
+
+Use AskUserQuestion to present this as selectable options — NOT as a text prompt the user has to type into.
+
+Similarly, if git log has zero commits or no authors detected:
+> **Solo dev or team?**
+> - Just me
+> - Team (2-5)
+> - Large team (6+)
+
+ONLY ask what auto-detection genuinely could not determine. Every question you ask that could have been detected is a failure of the skill.
+
 ---
 
 ## Phase 1: Deep Codebase Analysis
