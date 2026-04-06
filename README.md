@@ -8,6 +8,16 @@ npx skills add johnnichev/nv-context -g -y
 
 Auto-detects your tools, commands, and linters. Finds landmines with parallel agents. Generates configs, hooks, session management, and token budgets — so every AI coding agent works at maximum effectiveness.
 
+## Production Proof
+
+| Repo | Before | After | Change |
+|------|--------|-------|--------|
+| [selectools](https://github.com/johnnichev/selectools) (Python SDK) | L3, 49/60 | **L5-L6, 58/60** | 440-line CLAUDE.md → 67 lines (-85%), token budget -53% |
+| saas-platform (NichevLabs) | L4, 17/60 | **L6, 49/60** | SESSION.md 805 → 59 lines (-93%, saved 15.8K tokens/session). 81 bugs found and fixed. |
+| sheriff (Python+TS) | L4, 36/60 | **L5, 42/60** | Incremental improvement on already-strong setup |
+
+**Benchmark:** 100% pass rate on 3 test scenarios vs 45.8% baseline (+54.2% delta).
+
 > "Most agent failures are not model failures — they are context failures."
 > — Philipp Schmid, Google DeepMind
 
@@ -73,7 +83,7 @@ mkdir -p ~/.claude/skills/nv-context && curl -o ~/.claude/skills/nv-context/SKIL
 ```bash
 git clone https://github.com/johnnichev/nv-context.git
 mkdir -p ~/.claude/skills/nv-context
-cp -r nv:context/skills/nv-context/* ~/.claude/skills/nv-context/
+cp -r nv-context/skills/nv-context/* ~/.claude/skills/nv-context/
 ```
 
 **Then open any project and run:**
