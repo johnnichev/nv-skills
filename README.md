@@ -6,26 +6,34 @@
 npx skills add johnnichev/nv-context -g -y
 ```
 
-Auto-detects your tools, commands, and linters. Finds landmines with parallel agents. Generates configs, hooks, session management, and token budgets — so every AI coding agent works at maximum effectiveness.
+Auto-detects your tools, commands, and linters. Finds landmines with parallel agents. Generates configs, hooks, session management, and token budgets so every AI coding agent works at maximum effectiveness.
+
+> **Live experience:** [skills.nichevlabs.com](https://skills.nichevlabs.com) · production case studies, the research library, and the full synthesis.
+
+---
 
 ## Production Proof
 
-| Repo | Before | After | Change |
-|------|--------|-------|--------|
-| [selectools](https://github.com/johnnichev/selectools) (Python SDK) | L3, 49/60 | **L5-L6, 58/60** | 440-line CLAUDE.md → 67 lines (-85%), token budget -53% |
-| saas-platform (NichevLabs) | L4, 17/60 | **L6, 49/60** | SESSION.md 805 → 59 lines (-93%, saved 15.8K tokens/session). 81 bugs found and fixed. |
-| sheriff (Python+TS) | L4, 36/60 | **L5, 42/60** | Incremental improvement on already-strong setup |
+Three real codebases. Same skill. Real numbers.
+
+| Repo | Before | After | What changed |
+|------|--------|-------|--------------|
+| [selectools](https://github.com/johnnichev/selectools) (Python SDK, 4,612 tests) | L3, 49/60 | **L5–L6, 58/60** | CLAUDE.md 440 → 67 lines (-85%). Token budget cut 53%. |
+| **nichevlabs** (multi-product SaaS, orchestrated by selectools) | L4, 17/60 | **L6, 49/60** | SESSION.md 805 → 59 lines (-93%). Saved 15.8K tokens per session. 81 bugs surfaced. |
+| sheriff (Python + TypeScript) | L4, 36/60 | **L5, 42/60** | Incremental polish on an already-strong setup. Coverage gate added. |
+
+[Read the full case studies →](https://skills.nichevlabs.com/case-studies)
 
 **Benchmark:** 100% pass rate on 3 test scenarios vs 45.8% baseline (+54.2% delta).
 
-> "Most agent failures are not model failures — they are context failures."
-> — Philipp Schmid, Google DeepMind
+> "Most agent failures are not model failures. They are context failures."
+> Philipp Schmid, Google DeepMind
 
 ---
 
 ## The Problem
 
-Your AI agent is smart. But it keeps running the wrong test command, touching files it shouldn't, and forgetting your rules mid-session. You've tried writing a CLAUDE.md. Maybe you ran `/init`. It didn't help — and research proves why:
+Your AI agent is smart. But it keeps running the wrong test command, touching files it shouldn't, and forgetting your rules mid-session. You've tried writing a CLAUDE.md. Maybe you ran `/init`. It didn't help. Research proves why:
 
 | Finding | Source |
 |---------|--------|
@@ -35,7 +43,11 @@ Your AI agent is smart. But it keeps running the wrong test command, touching fi
 | Using 40% of context window outperforms using 90% | Dex Horthy |
 | A focused 300-token context beats unfocused 113K tokens | FlowHunt |
 
-**Bad context doesn't just not help — it actively hurts.**
+**Bad context doesn't just not help. It actively hurts.**
+
+[See all 200+ sources →](https://skills.nichevlabs.com/research)
+
+---
 
 ## The Solution
 
@@ -44,16 +56,18 @@ nv:context applies 200+ research sources to set up your repo correctly. In under
 1. **Interviews you** about your tools, pain points, landmines, and workflow preferences
 2. **Analyzes your codebase** for non-obvious patterns, exact commands, and architectural gotchas
 3. **Scores your setup** with the Hierarchy of Leverage framework
-4. **Generates tailored configs** — only for tools you use, only content agents can't discover themselves
+4. **Generates tailored configs**, only for tools you use, only content agents can't discover themselves
 5. **Sets up hooks** for deterministic enforcement (auto-format, branch protection, PostCompact re-injection)
-6. **Creates session management** — HANDOFF.md, .claudeignore, Document-and-Clear workflow
-7. **Installs compounding engineering** — your codebase gets smarter with every PR review
+6. **Creates session management**: HANDOFF.md, .claudeignore, Document-and-Clear workflow
+7. **Installs compounding engineering**: your codebase gets smarter with every PR review
+
+---
 
 ## What Gets Generated
 
 ```
 your-repo/
-  AGENTS.md                         # Universal (25+ AI tools read this)
+  AGENTS.md                         # Universal: read by 25+ AI coding tools
   CLAUDE.md                         # Claude-specific with @imports (<50 lines)
   tests/CLAUDE.md                   # Testing scope
   src/CLAUDE.md                     # Source scope
@@ -66,20 +80,27 @@ your-repo/
     learn-from-reviews.yml          # Auto-learn from PR reviews
 ```
 
+**Works with:** Claude Code, Cursor, GitHub Copilot, Aider, Codeium, Continue, Windsurf, Zed, and 17 more AI coding tools via the universal AGENTS.md format.
+
+---
+
 ## Install
 
 **Option 1: Skills CLI (recommended)**
+
 ```bash
 npx skills add johnnichev/nv-context -g -y
 ```
 
 **Option 2: One-liner**
+
 ```bash
 mkdir -p ~/.claude/skills/nv-context && curl -o ~/.claude/skills/nv-context/SKILL.md \
   https://raw.githubusercontent.com/johnnichev/nv-context/main/skills/nv-context/SKILL.md
 ```
 
 **Option 3: Clone with templates**
+
 ```bash
 git clone https://github.com/johnnichev/nv-context.git
 mkdir -p ~/.claude/skills/nv-context
@@ -87,15 +108,18 @@ cp -r nv-context/skills/nv-context/* ~/.claude/skills/nv-context/
 ```
 
 **Then open any project and run:**
+
 ```
 /nv-context
 ```
+
+---
 
 ## Key Features
 
 ### Hierarchy of Leverage Scoring
 
-Not just L0-L6 maturity — scores each layer independently:
+Not just L0–L6 maturity. Scores each layer independently:
 
 ```
 Hierarchy of Leverage Score
@@ -142,7 +166,7 @@ Research proves "don't use X" makes agents MORE likely to use X. nv:context scan
 BEFORE: "don't use moment.js"
 AFTER:  "MUST use date-fns for all date operations"
 
-BEFORE: "avoid raw SQL queries"  
+BEFORE: "avoid raw SQL queries"
 AFTER:  "MUST use the ORM query builder for database operations"
 ```
 
@@ -152,7 +176,7 @@ Tag PR reviews with `@claude-learn` and the learning auto-creates a PR adding it
 
 ### Multi-Level Hierarchy
 
-Not just root configs — generates scoped files per directory:
+Not just root configs. Generates scoped files per directory:
 
 ```
 CLAUDE.md              # Orientation (50-100 lines)
@@ -163,27 +187,35 @@ src/api/CLAUDE.md      # API-specific patterns
 
 Agents only load what's relevant to where they're working.
 
+---
+
 ## The 8 Laws
 
 Built into every file nv:context generates:
 
-1. **Less is more** — every line must earn its place
-2. **Landmines, not maps** — document what agents can't discover
-3. **Commands beat prose** — snippets over paragraphs
-4. **Context is finite** — 150-200 instruction budget
-5. **Progressive disclosure** — layer context by need
-6. **Hooks for determinism** — 100% compliance for critical rules
-7. **Negative instructions backfire** — "MUST use Y" not "don't use X"
-8. **Compact proactively** — 60% safe, 70% degrading, 85% hallucinating
+1. **Less is more.** Every line must earn its place.
+2. **Landmines, not maps.** Document what agents can't discover.
+3. **Commands beat prose.** Snippets over paragraphs.
+4. **Context is finite.** 150–200 instruction budget.
+5. **Progressive disclosure.** Layer context by need.
+6. **Hooks for determinism.** 100% compliance for critical rules.
+7. **Negative instructions backfire.** "MUST use Y", not "don't use X".
+8. **Compact proactively.** 60% safe, 70% degrading, 85% hallucinating.
+
+[Read the full synthesis →](https://skills.nichevlabs.com/synthesis) · 10 laws, 4 universal operations, the complete framework.
+
+---
 
 ## Research
 
-nv:context is built on the most comprehensive context engineering research compilation that exists:
+200+ external sources. 12 research logs. 471 KB of focused notes.
 
-**12 research documents, 471KB, 200+ sources:**
+This isn't pop AI. Every recommendation in the skill links back to a real source: published papers, production data, experienced practitioners. Six parallel research agents synthesized 200+ sources into 12 focused logs, organized by research dimension.
 
-| Document | Coverage |
-|----------|----------|
+[Browse the full research library →](https://skills.nichevlabs.com/research)
+
+| Log | Coverage |
+|-----|----------|
 | [Definitions & Theory](research/logs/definitions_research.md) | Karpathy, Schmid, Anthropic, academic foundations |
 | [Articles & Blog Posts](research/logs/articles_research.md) | 36 deep-analyzed articles |
 | [X/Twitter Discourse](research/logs/twitter_research.md) | 50+ posts from 15+ thought leaders |
@@ -197,20 +229,32 @@ nv:context is built on the most comprehensive context engineering research compi
 | [Python Patterns](research/logs/python_specific_research.md) | MCP SDK, Pydantic AI, Python-specific patterns |
 | [Workflow Patterns](research/logs/workflow_patterns_research.md) | RPI, subagents, TDD, debugging, worktrees |
 
-Key sources: Anthropic, ETH Zurich, Google DeepMind, Manus, LangChain, GitHub (2,500-repo analysis), JetBrains (NeurIPS 2025), METR, Boris Cherny (Claude Code creator), Dex Horthy (12-Factor Agents).
+**Featured sources:** Anthropic, ETH Zurich, Google DeepMind, Manus, LangChain, GitHub (2,500-repo analysis), JetBrains (NeurIPS 2025), METR, Boris Cherny (Claude Code creator), Dex Horthy (12-Factor Agents).
 
-[Full synthesis](research/SYNTHESIS.md)
+[Read the full synthesis](https://skills.nichevlabs.com/synthesis) · [Or read it on GitHub](research/SYNTHESIS.md)
+
+---
 
 ## Docs
 
-- [Quickstart](docs/QUICKSTART.md) — 2-minute install guide
-- [Manifesto](docs/MANIFESTO.md) — the philosophy
-- [Hierarchy of Leverage](docs/HIERARCHY-OF-LEVERAGE.md) — the framework
-- [FAQ](docs/FAQ.md) — common questions
+- [Quickstart](docs/QUICKSTART.md): 2-minute install guide
+- [Manifesto](docs/MANIFESTO.md): the philosophy
+- [Hierarchy of Leverage](docs/HIERARCHY-OF-LEVERAGE.md): the framework
+- [FAQ](docs/FAQ.md): common questions
+
+## Related skills
+
+nv:context is part of the **nv:** skills collection:
+
+- **nv:context** *(this repo)* · context engineering for AI agents
+- **[nv:dev](https://github.com/johnnichev/nv-dev)** · TDD, debugging, code review workflows
+- **[nv:ops](https://github.com/johnnichev/nv-ops)** · release workflows, incident response, observability
+- **[nv:design](https://github.com/johnnichev/nv-design)** · Vibe Design methodology (the skill that built [skills.nichevlabs.com](https://skills.nichevlabs.com))
 
 ## Contributing
 
 nv:context improves when practitioners share what works. Open an issue or PR with:
+
 - Patterns that improved your agent performance
 - Anti-patterns you discovered the hard way
 - Research we should include
@@ -223,3 +267,4 @@ MIT
 ---
 
 **Built by [johnnichev](https://github.com/johnnichev).** For engineers who ship.
+**Live experience:** [skills.nichevlabs.com](https://skills.nichevlabs.com)

@@ -2,30 +2,29 @@
 
 Get nv:context running in 2 minutes.
 
+> **See it live:** [skills.nichevlabs.com](https://skills.nichevlabs.com) shows production case studies, the research library, and the full synthesis.
+
 ## Install
 
-### Option 1: Global (all projects)
+### Option 1: Skills CLI (recommended)
 
 ```bash
-git clone https://github.com/johnnichev/nv-skills.git
-mkdir -p ~/.claude/skills/nv-context
-cp nv-skills/skills/nv-context/SKILL.md ~/.claude/skills/nv-context/SKILL.md
+npx skills add johnnichev/nv-context -g -y
 ```
 
-### Option 2: Per-project
+### Option 2: One-liner
 
 ```bash
-mkdir -p .claude/skills/nv-context
-curl -o .claude/skills/nv-context/SKILL.md \
-  https://raw.githubusercontent.com/johnnichev/nv-skills/main/skill/SKILL.md
+mkdir -p ~/.claude/skills/nv-context && curl -o ~/.claude/skills/nv-context/SKILL.md \
+  https://raw.githubusercontent.com/johnnichev/nv-context/main/skills/nv-context/SKILL.md
 ```
 
-### Option 3: With templates (recommended)
+### Option 3: Clone with templates
 
 ```bash
-git clone https://github.com/johnnichev/nv-skills.git
+git clone https://github.com/johnnichev/nv-context.git
 mkdir -p ~/.claude/skills/nv-context
-cp -r nv-skills/skills/nv-context/* ~/.claude/skills/nv-context/
+cp -r nv-context/skills/nv-context/* ~/.claude/skills/nv-context/
 ```
 
 ## Use

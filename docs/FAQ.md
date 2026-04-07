@@ -3,10 +3,10 @@
 ## General
 
 **What is nv:context?**
-A Claude Code skill that sets up state-of-the-art context engineering for any repository. It analyzes your codebase, interviews you about your workflow, and generates the complete infrastructure — config files, hooks, session management, token budgets — so AI coding agents work at maximum effectiveness.
+A Claude Code skill that sets up state-of-the-art context engineering for any repository. It analyzes your codebase, interviews you about your workflow, and generates the complete infrastructure (config files, hooks, session management, token budgets) so AI coding agents work at maximum effectiveness.
 
 **What is context engineering?**
-The systematic discipline of providing AI agents with the right information, in the right format, at the right time. It's the evolution beyond prompt engineering — instead of crafting clever prompts, you build the information ecosystem around your agents.
+The systematic discipline of providing AI agents with the right information, in the right format, at the right time. It's the evolution beyond prompt engineering: instead of crafting clever prompts, you build the information ecosystem around your agents.
 
 **Why not just use `/init`?**
 ETH Zurich research proved that auto-generated config files REDUCE agent success by 3% and increase costs by 20%+. nv:context interviews you first, analyzes your codebase for non-obvious patterns, and generates minimal, high-signal configs. Every line earns its place.
@@ -31,7 +31,7 @@ No. nv:context is a Claude Code skill. Copy the SKILL.md file and you're done.
 Under 200 lines per root file. Under 100 is ideal. Under 50 is elite. The research is clear: shorter files with higher signal density outperform longer files.
 
 **Why do negative instructions backfire?**
-Research shows that "don't use X" increases the probability of the model using X — the instruction draws attention to X. "MUST use Y" directs attention to the correct alternative. Exception: "NEVER" as an absolute prohibition works fine.
+Research shows that "don't use X" increases the probability of the model using X. The instruction draws attention to X. "MUST use Y" directs attention to the correct alternative. Exception: "NEVER" as an absolute prohibition works fine.
 
 **What's the PostCompact hook?**
 When Claude's context gets compressed (compaction), it can lose critical rules. The PostCompact hook automatically re-injects the most important context after compaction fires. It solves the #1 complaint: "the agent forgets my rules mid-session."
@@ -51,4 +51,4 @@ Context engineering matters most for people building real software with AI agent
 A controlled study showing experienced developers are 19% slower with AI tools, despite feeling 24% faster. The 39-percentage-point perception gap means bad context actively hurts. Good context is what flips the equation.
 
 **Why is the research included in the repo?**
-The 12 research documents (471KB from 200+ sources) are the most comprehensive compilation on context engineering that exists. They're the foundation the skill is built on, and they're valuable as a standalone reference for anyone interested in the discipline.
+The 12 research logs (471KB digesting 200+ external sources) are the most comprehensive compilation on context engineering that exists. They're the foundation the skill is built on, and they're valuable as a standalone reference for anyone interested in the discipline. You can browse them at [skills.nichevlabs.com/research](https://skills.nichevlabs.com/research) or in the [research/](../research/) folder.
