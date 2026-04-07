@@ -46,7 +46,7 @@ wc -l skills/nv-context/SKILL.md
 
 ## Landmines
 
-- `skills/nv-context/SKILL.md` (477 lines): 23 lines from the 500-line hard cap. Every line added MUST justify removing another. The skill loads into agent context on every invocation -- bloat here costs tokens across every user's session.
+- `skills/nv-context/SKILL.md` (462 lines): 38 lines from the 500-line hard cap. Every line added MUST justify removing another. The skill loads into agent context on every invocation -- bloat here costs tokens across every user's session.
 - `skills/nv-context/*.template` files: These are OBSOLETE. SKILL.md v3 generates all content inline per the "Commands Beat Prose" law. Templates remain as reference examples only -- NEVER reference them from SKILL.md as `@imports`.
 - `hooks/learn-from-reviews.yml` (line 21): Contains a **script injection vulnerability** -- `${{ github.event.review.body }}` is interpolated directly in a `run:` block. MUST use `env:` indirection instead. See SKILL.md Phase 7 for the correct pattern.
 - `hooks/settings.json.template`: Placeholder commands `[FORMAT_COMMAND]`, `[LINT_COMMAND]`, `[TEST_COMMAND]` -- these are meant to be replaced per-project by the skill, not used as-is.
